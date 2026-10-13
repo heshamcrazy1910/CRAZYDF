@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}catch(e){}
-$('t1').onclick=()=>tab(1);$('t2').onclick=()=>tab(2);
-function tab(n){$('p1').classList.toggle('hide',n!=1);$('p2').classList.toggle('hide',n!=2);$('t1').classList.toggle('on',n==1);$('t2').classList.toggle('on',n==2)}
+[1,2,3].forEach(i=>$('t'+i).onclick=()=>tab(i));
+function tab(n){[1,2,3].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function wire(d,f,cb){d.onclick=()=>f.click();f.onchange=()=>{cb([...f.files]);f.value=''};
 d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.ondragleave=()=>d.classList.remove('h');
@@ -55,13 +55,13 @@ wire($('d2'),$('f2'),async fl=>{
    $('g2').appendChild(d);pages.push({pg,n,cb:d.querySelector('input')})}
   $('st').textContent=pdf.numPages+' صفحة';$('b2').disabled=$('b3').disabled=false;
  }catch(e){$('st').textContent='تعذّر فتح الملف'}});
-async function render(p){const ext=$('fmt').value,vp=p.pg.getViewport({scale:+$('sc').value}),c=document.createElement('canvas');
+async function render(p){const ext='png',b0=p.pg.getViewport({scale:1}),vp=p.pg.getViewport({scale:Math.min(3,7000/Math.max(b0.width,b0.height))}),c=document.createElement('canvas');
  c.width=vp.width;c.height=vp.height;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
  await p.pg.render({canvasContext:x,viewport:vp}).promise;
- return new Promise(r=>c.toBlob(r,'image/'+ext,.92))}
+ return new Promise(r=>c.toBlob(r,'image/'+ext,1))}
 async function run(sel){
  const list=pages.filter(p=>!sel||p.cb.checked);if(!list.length)return;
- const ext=$('fmt').value=='jpeg'?'jpg':'png';$('st').textContent='جارٍ التحويل…';
+ const ext='png';$('st').textContent='جارٍ التحويل…';
  if(list.length==1&&sel){dl(await render(list[0]),`page-${list[0].n}.${ext}`)}
  else{const z=new JSZip();for(const p of list)z.file(`page-${p.n}.${ext}`,await render(p));dl(await z.generateAsync({type:'blob'}),'crazydf-pages.zip')}
  $('st').textContent='تم ✓'}
@@ -73,3 +73,45 @@ const sync=()=>{b.textContent=sel.options[sel.selectedIndex].text;[...ul.childre
 [...sel.options].forEach((o,i)=>{const li=document.createElement('li');li.textContent=o.text;li.onclick=()=>{sel.selectedIndex=i;sel.dispatchEvent(new Event('change'));w.classList.remove('open');sync()};ul.appendChild(li)});
 b.onclick=e=>{e.stopPropagation();document.querySelectorAll('.dd.open').forEach(x=>x!==w&&x.classList.remove('open'));w.classList.toggle('open')};sync()});
 document.addEventListener('click',()=>document.querySelectorAll('.dd.open').forEach(x=>x.classList.remove('open')));
+
+let file3=null;
+try{$('ky').value=localStorage.getItem('crazydf_key')||''}catch(e){}
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function clean(h){const d=new DOMParser().parseFromString(h,'text/html');d.querySelectorAll('script,iframe,object,embed,link,meta,style,form').forEach(e=>e.remove());d.body.querySelectorAll('*').forEach(e=>{[...e.attributes].forEach(a=>{if(/^on/i.test(a.name)||/javascript:/i.test(a.value))e.removeAttribute(a.name)})});return d.body.innerHTML}
+function showKey(){$('kw').classList.toggle('hide',$('en').value!='claude');0}
+$('en').onchange=showKey;showKey();
+wire($('d3'),$('f3'),fl=>{const f=fl[0];if(!f||!f.type.startsWith('image/'))return;file3=f;$('pv3').src=URL.createObjectURL(f);$('pv3').classList.remove('hide');$('b4').disabled=false;$('st3').textContent=''});
+function toJpeg(f){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=im.naturalWidth*k;c.height=im.naturalHeight*k;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.9).split(',')[1])};im.onerror=rej;im.src=URL.createObjectURL(f)})}
+const RULES='Output only an HTML fragment (no <html>/<head>/<body>, no CSS classes, no code fences, no commentary). Use h1-h3, p, ul/ol, table for tables, b/i for emphasis, and inline style only for text-align or colors when needed. Keep the original language(s), do not translate, and put dir="rtl" on Arabic blocks.';
+async function askClaude(key,content){
+ try{localStorage.setItem('crazydf_key',key)}catch(e){}
+ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+ body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:4000,messages:[{role:'user',content}]})});
+ const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||'خطأ من الـ API');
+ return clean(j.content.map(c=>c.text||'').join('').replace(/^```(?:html)?\s*|```\s*$/g,''))}
+async function viaClaude(){
+ const key=$('ky').value.trim();if(!key)throw new Error('اكتب مفتاح API الأول');
+ const data=await toJpeg(file3);
+ return askClaude(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'Transcribe all the text in this image exactly as written and recreate its layout as clean HTML. '+RULES}])}
+$('b8').onclick=async()=>{const c=$('cm').value.trim(),key=$('ky').value.trim();if(!c)return;
+ if(!key){$('st3').textContent='التعديل بيحتاج مفتاح Claude — اختار Claude AI وحط المفتاح';return}
+ $('b8').disabled=true;$('st3').textContent='جارٍ تطبيق التعديل…';
+ try{const data=await toJpeg(file3);
+  $('rs').innerHTML=await askClaude(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'This is the current HTML recreation of the image:\n'+$('rs').innerHTML+'\n\nUser correction: '+c+'\n\nApply the correction and return the full updated HTML. '+RULES}]);
+  $('cm').value='';$('st3').textContent='تم التعديل ✓'
+ }catch(e){$('st3').textContent=e.message||'تعذّر التعديل'}
+ $('b8').disabled=false};
+async function viaOcr(){
+ if(!window.Tesseract)throw new Error('تعذّر تحميل محرك OCR — افتح الملفات من جهازك مع إنترنت');
+ const w=await Tesseract.createWorker($('lg').value.split('+'),1,{logger:m=>{if(m.status==='recognizing text')$('st3').textContent='جارٍ القراءة '+Math.round(m.progress*100)+'%'}});
+ const r=await w.recognize(file3);await w.terminate();
+ return r.data.text.trim().split(/\n{2,}/).map(p=>'<p dir="auto">'+esc(p).replace(/\n/g,'<br>')+'</p>').join('')}
+$('b4').onclick=async()=>{$('b4').disabled=true;$('st3').textContent='جارٍ المعالجة…';
+ try{const h=await($('en').value=='claude'?viaClaude():viaOcr());
+  $('rs').innerHTML=h;$('rs').classList.remove('hide');$('ex').classList.remove('hide');$('cmw').classList.remove('hide');$('st3').textContent='تم ✓ — تقدر تعدّل مباشرة قبل التصدير';
+ }catch(e){$('st3').textContent=e.message||'تعذّرت المعالجة'}
+ $('b4').disabled=false};
+function docHtml(){return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Arial,Cairo,sans-serif;font-size:14pt;line-height:1.8}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+$('rs').innerHTML+'</body></html>'}
+$('b5').onclick=()=>dl(new Blob(['\ufeff',docHtml()],{type:'application/msword'}),'crazydf.doc');
+$('b6').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml());w.document.close();w.focus();setTimeout(()=>w.print(),500)};
+$('b7').onclick=()=>{navigator.clipboard.writeText($('rs').innerText);$('st3').textContent='تم النسخ ✓'};

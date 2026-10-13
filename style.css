@@ -35,7 +35,6 @@ button.go:disabled{opacity:.4;box-shadow:none}
 .dd li{padding:9px 16px;border-radius:10px;cursor:pointer;white-space:nowrap;font-weight:600;font-size:15px}
 .dd li:hover{background:#14233f}
 .dd li.on{background:var(--g);color:#fff}
-
 .brand{display:flex;align-items:center;gap:14px;margin-top:10px}
 .brand img{width:56px;height:56px;border-radius:16px;box-shadow:0 0 24px #14b8ff55}
 .brand h1{margin:0}
@@ -46,3 +45,14 @@ footer{border-top:1px solid var(--bd);background:#050a1acc;padding:20px 16px;tex
 .soc svg{width:22px;height:22px}
 footer p{margin:0;color:var(--mu);font-size:14px;direction:ltr}
 footer p b{color:var(--tx)}
+#pv3{max-width:100%;max-height:240px;margin-top:12px;border-radius:12px;display:block}
+textarea{width:100%;min-height:220px;margin-top:14px;background:#040815;color:var(--tx);border:1px solid var(--bd);border-radius:14px;padding:12px;font:16px/1.9 Cairo,sans-serif;resize:vertical}
+textarea:focus{outline:0;border-color:var(--c1)}
+#ky{flex:1;min-width:200px;padding:10px 16px;border-radius:999px;border:1px solid #243a6b;background:#050a1a;color:var(--tx);font:15px Cairo,sans-serif;direction:ltr}
+#ky:focus{outline:0;border-color:var(--c1)}
+#rs{margin-top:14px;background:#fff;color:#111;border-radius:14px;padding:22px;min-height:200px;line-height:1.9;font-size:16px;overflow-x:auto}
+#rs:focus{outline:2px solid var(--c1)}
+#rs table{border-collapse:collapse;width:100%}#rs td,#rs th{border:1px solid #999;padding:6px 8px}
+#gk{display:inline-block;margin-top:8px;color:var(--c1);font-weight:600;font-size:14px;text-decoration:none;border-bottom:1px dashed var(--c1)}
+#gk:hover{color:#fff;border-color:#fff}
+
