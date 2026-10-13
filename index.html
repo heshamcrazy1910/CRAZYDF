@@ -1,73 +1,58 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>CrazyDf — تحويل PDF وصور</title>
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>crazydf — تحويل PDF وصور</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div class="w">
+<div class="w">
 
-        <div class="brand"><img
-                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"
-                alt="">
-            <h1>Crazy<b>Df</b></h1>
-        </div>
-        <p class="sub">حوّل الصور إلى PDF والعكس — داخل متصفحك، بدون رفع ملفات وبدون تسجيل.</p>
-        <div class="tabs"><button id="t1" class="on">صور ← PDF</button><button id="t2">PDF ← صور</button></div>
+<div class="brand"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><h1>crazy<b>df</b></h1></div>
+<p class="sub">حوّل الصور إلى PDF والعكس — داخل متصفحك، بدون رفع ملفات وبدون تسجيل.</p>
+<div class="tabs"><button id="t1" class="on">صور ← PDF</button><button id="t2">PDF ← صور</button></div>
 
-        <div id="p1" class="card">
-            <div class="drop" id="d1">اسحب الصور هنا أو اضغط للاختيار (JPG, PNG, WebP)</div>
-            <input type="file" id="f1" accept="image/*" multiple hidden>
-            <div class="grid" id="g1"></div>
-            <div class="opts">
-                <select id="ori">
-                    <option value="p">طولي</option>
-                    <option value="l">عرضي</option>
-                </select>
-                <select id="siz">
-                    <option value="a4">A4</option>
-                    <option value="img">نفس حجم الصورة</option>
-                </select>
-                <select id="mar">
-                    <option value="0">بدون هوامش</option>
-                    <option value="10">هوامش</option>
-                </select>
-                <button class="go" id="b1" disabled>إنشاء PDF</button>
-            </div>
-            <p class="mu">رتّب الصور بالسحب والإفلات قبل التحويل.</p>
-        </div>
+<div id="p1" class="card">
+<div class="drop" id="d1">اسحب الصور هنا أو اضغط للاختيار (JPG, PNG, WebP)</div>
+<input type="file" id="f1" accept="image/*" multiple hidden>
+<div class="grid" id="g1"></div>
+<div class="opts">
+<select id="ori"><option value="p">طولي</option><option value="l">عرضي</option></select>
+<select id="siz"><option value="a4">A4</option><option value="img">نفس حجم الصورة</option></select>
+<select id="mar"><option value="0">بدون هوامش</option><option value="10">هوامش</option></select>
+<button class="go" id="b1" disabled>إنشاء PDF</button>
+</div>
+<p class="mu">رتّب الصور بالسحب والإفلات قبل التحويل.</p>
+</div>
 
-        <div id="p2" class="card hide">
-            <div class="drop" id="d2">اسحب ملف PDF هنا أو اضغط للاختيار</div>
-            <input type="file" id="f2" accept="application/pdf" hidden>
-            <div class="opts">
-                <select id="fmt">
-                    <option value="png">PNG</option>
-                    <option value="jpeg">JPG</option>
-                </select>
-                <select id="sc">
-                    <option value="1.5">جودة عادية</option>
-                    <option value="2.5">جودة عالية</option>
-                </select>
-                <button class="go" id="b2" disabled>تحميل المحدد</button>
-                <button class="go" id="b3" disabled>الكل ZIP</button>
-                <span class="mu" id="st"></span>
-            </div>
-            <div class="grid" id="g2"></div>
-        </div>
-    </div>
+<div id="p2" class="card hide">
+<div class="drop" id="d2">اسحب ملف PDF هنا أو اضغط للاختيار</div>
+<input type="file" id="f2" accept="application/pdf" hidden>
+<div class="opts">
+<select id="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option></select>
+<select id="sc"><option value="1.5">جودة عادية</option><option value="2.5">جودة عالية</option></select>
+<button class="go" id="b2" disabled>تحميل المحدد</button>
+<button class="go" id="b3" disabled>الكل ZIP</button>
+<span class="mu" id="st"></span>
+</div>
+<div class="grid" id="g2"></div>
+</div>
+</div>
 
-    <script src="script.js"></script>
+<footer>
+<div class="soc">
+<a href="https://wa.me/heshamcrazy19" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 21l1.6-4.6A9 9 0 1 1 8 19.6L3 21z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-2z" fill="currentColor" stroke="none"/></svg></a>
+<a href="https://www.facebook.com/share/14s7tuikb33/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.5V11H7v4h2.5v7h4v-7H16l.5-4h-3V9c0-.6.4-1 1-1z"/></svg></a>
+<a href="https://instagram.com/hesham.hassan19" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+</div>
+<p>© 2026 <b>heshamcrazy</b> — جميع الحقوق محفوظة</p>
+</footer>
+<script src="script.js"></script>
 </body>
-
 </html>

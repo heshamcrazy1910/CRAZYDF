@@ -39,3 +39,10 @@ button.go:disabled{opacity:.4;box-shadow:none}
 .brand{display:flex;align-items:center;gap:14px;margin-top:10px}
 .brand img{width:56px;height:56px;border-radius:16px;box-shadow:0 0 24px #14b8ff55}
 .brand h1{margin:0}
+footer{border-top:1px solid var(--bd);background:#050a1acc;padding:20px 16px;text-align:center}
+.soc{display:flex;justify-content:center;gap:14px;margin-bottom:12px}
+.soc a{width:46px;height:46px;border-radius:50%;border:1px solid #243a6b;background:#050a1a;display:flex;align-items:center;justify-content:center;color:var(--c1);transition:.2s}
+.soc a:hover{background:var(--g);color:#fff;border-color:transparent;box-shadow:0 0 20px #14b8ff66;transform:translateY(-2px)}
+.soc svg{width:22px;height:22px}
+footer p{margin:0;color:var(--mu);font-size:14px;direction:ltr}
+footer p b{color:var(--tx)}
