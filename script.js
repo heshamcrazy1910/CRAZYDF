@@ -75,29 +75,41 @@ b.onclick=e=>{e.stopPropagation();document.querySelectorAll('.dd.open').forEach(
 document.addEventListener('click',()=>document.querySelectorAll('.dd.open').forEach(x=>x.classList.remove('open')));
 
 let file3=null;
-try{$('ky').value=localStorage.getItem('crazydf_key')||''}catch(e){}
+try{$('ky').value=localStorage.getItem('crazydf_gkey')||''}catch(e){}
 const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function clean(h){const d=new DOMParser().parseFromString(h,'text/html');d.querySelectorAll('script,iframe,object,embed,link,meta,style,form').forEach(e=>e.remove());d.body.querySelectorAll('*').forEach(e=>{[...e.attributes].forEach(a=>{if(/^on/i.test(a.name)||/javascript:/i.test(a.value))e.removeAttribute(a.name)})});return d.body.innerHTML}
-function showKey(){$('kw').classList.toggle('hide',$('en').value!='claude');0}
+function showKey(){$('kw').classList.toggle('hide',$('en').value!='ai');0}
 $('en').onchange=showKey;showKey();
 wire($('d3'),$('f3'),fl=>{const f=fl[0];if(!f||!f.type.startsWith('image/'))return;file3=f;$('pv3').src=URL.createObjectURL(f);$('pv3').classList.remove('hide');$('b4').disabled=false;$('st3').textContent=''});
 function toJpeg(f){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=im.naturalWidth*k;c.height=im.naturalHeight*k;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.9).split(',')[1])};im.onerror=rej;im.src=URL.createObjectURL(f)})}
 const RULES='Output only an HTML fragment (no <html>/<head>/<body>, no CSS classes, no code fences, no commentary). Use h1-h3, p, ul/ol, table for tables, b/i for emphasis, and inline style only for text-align or colors when needed. Keep the original language(s), do not translate, and put dir="rtl" on Arabic blocks.';
-async function askClaude(key,content){
- try{localStorage.setItem('crazydf_key',key)}catch(e){}
- const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
- body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:4000,messages:[{role:'user',content}]})});
- const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||'خطأ من الـ API');
- return clean(j.content.map(c=>c.text||'').join('').replace(/^```(?:html)?\s*|```\s*$/g,''))}
-async function viaClaude(){
+async function askAI(key,content){
+ try{localStorage.setItem('crazydf_gkey',key)}catch(e){}
+ const parts=content.map(c=>c.type=='image'?{inline_data:{mime_type:'image/jpeg',data:c.source.data}}:{text:c.text});
+ const body=JSON.stringify({contents:[{parts}],generationConfig:{maxOutputTokens:8192}});
+ const models=['gemini-3.8-flash','gemini-flash-latest','gemini-flash-lite-latest'];let last='';
+ for(const m of models)for(let t=0;t<2;t++){
+  try{
+   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':key},body});
+   const j=await r.json();
+   if(!r.ok){last=j.error&&j.error.message||'';
+    if(r.status==404)break;
+    if([429,500,503,504].includes(r.status)){$('st3').textContent='الموديل مزحوم، بحاول تاني…';await new Promise(z=>setTimeout(z,1500*(t+1)));continue}
+    throw new Error(last||'خطأ من الـ API')}
+   const x=((j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[]).map(c=>c.text||'').join('');
+   if(!x.trim()){last='empty';continue}
+   return clean(x.replace(/^```(?:html)?\s*|```\s*$/g,''))
+  }catch(e){if(e instanceof TypeError){last='network';continue}throw e}}
+ throw new Error('Gemini مزحوم دلوقتي. جرّب بعد دقيقة أو اتنين، أو اختار OCR المجاني.')}
+async function viaAI(){
  const key=$('ky').value.trim();if(!key)throw new Error('اكتب مفتاح API الأول');
  const data=await toJpeg(file3);
- return askClaude(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'Transcribe all the text in this image exactly as written and recreate its layout as clean HTML. '+RULES}])}
+ return askAI(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'Transcribe all the text in this image exactly as written and recreate its layout as clean HTML. '+RULES}])}
 $('b8').onclick=async()=>{const c=$('cm').value.trim(),key=$('ky').value.trim();if(!c)return;
- if(!key){$('st3').textContent='التعديل بيحتاج مفتاح Claude — اختار Claude AI وحط المفتاح';return}
+ if(!key){$('st3').textContent='التعديل بيحتاج مفتاح Gemini — اختار Gemini AI وحط المفتاح';return}
  $('b8').disabled=true;$('st3').textContent='جارٍ تطبيق التعديل…';
  try{const data=await toJpeg(file3);
-  $('rs').innerHTML=await askClaude(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'This is the current HTML recreation of the image:\n'+$('rs').innerHTML+'\n\nUser correction: '+c+'\n\nApply the correction and return the full updated HTML. '+RULES}]);
+  $('rs').innerHTML=await askAI(key,[{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'This is the current HTML recreation of the image:\n'+$('rs').innerHTML+'\n\nUser correction: '+c+'\n\nApply the correction and return the full updated HTML. '+RULES}]);
   $('cm').value='';$('st3').textContent='تم التعديل ✓'
  }catch(e){$('st3').textContent=e.message||'تعذّر التعديل'}
  $('b8').disabled=false};
@@ -107,7 +119,7 @@ async function viaOcr(){
  const r=await w.recognize(file3);await w.terminate();
  return r.data.text.trim().split(/\n{2,}/).map(p=>'<p dir="auto">'+esc(p).replace(/\n/g,'<br>')+'</p>').join('')}
 $('b4').onclick=async()=>{$('b4').disabled=true;$('st3').textContent='جارٍ المعالجة…';
- try{const h=await($('en').value=='claude'?viaClaude():viaOcr());
+ try{const h=await($('en').value=='ai'?viaAI():viaOcr());
   $('rs').innerHTML=h;$('rs').classList.remove('hide');$('ex').classList.remove('hide');$('cmw').classList.remove('hide');$('st3').textContent='تم ✓ — تقدر تعدّل مباشرة قبل التصدير';
  }catch(e){$('st3').textContent=e.message||'تعذّرت المعالجة'}
  $('b4').disabled=false};
