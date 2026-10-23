@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}catch(e){}
-[1,2,3].forEach(i=>$('t'+i).onclick=()=>tab(i));
-function tab(n){[1,2,3].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
+[1,2,3,4].forEach(i=>$('t'+i).onclick=()=>tab(i));
+function tab(n){[1,2,3,4].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function wire(d,f,cb){d.onclick=()=>f.click();f.onchange=()=>{cb([...f.files]);f.value=''};
 d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.ondragleave=()=>d.classList.remove('h');
@@ -123,7 +123,38 @@ $('b4').onclick=async()=>{$('b4').disabled=true;$('st3').textContent='جارٍ �
   $('rs').innerHTML=h;$('rs').classList.remove('hide');$('ex').classList.remove('hide');$('cmw').classList.remove('hide');$('st3').textContent='تم ✓ — تقدر تعدّل مباشرة قبل التصدير';
  }catch(e){$('st3').textContent=e.message||'تعذّرت المعالجة'}
  $('b4').disabled=false};
-function docHtml(){return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Arial,Cairo,sans-serif;font-size:14pt;line-height:1.8}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+$('rs').innerHTML+'</body></html>'}
+function docHtml(el){el=el||$('rs');return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Arial,Cairo,sans-serif;font-size:14pt;line-height:1.8}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+el.innerHTML+'</body></html>'}
 $('b5').onclick=()=>dl(new Blob(['\ufeff',docHtml()],{type:'application/msword'}),'crazydf.doc');
 $('b6').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml());w.document.close();w.focus();setTimeout(()=>w.print(),500)};
 $('b7').onclick=()=>{navigator.clipboard.writeText($('rs').innerText);$('st3').textContent='تم النسخ ✓'};
+
+function md2html(md){const out=[];let list=false,tbl=false;
+ const inl=x=>esc(x).replace(/!\[[^\]]*\]\([^)]*\)/g,'').replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|\s)\*([^*\s][^*]*)\*/g,'$1<i>$2</i>');
+ const close=()=>{if(list){out.push('</ul>');list=false}if(tbl){out.push('</table>');tbl=false}};
+ for(const raw of md.split('\n')){const l=raw.trim();let m;
+  if(!l){close();continue}
+  if(l[0]=='|'){if(/^\|[\s:|-]+\|?$/.test(l))continue;if(list){out.push('</ul>');list=false}if(!tbl){out.push('<table>');tbl=true}
+   out.push('<tr>'+l.replace(/^\||\|$/g,'').split('|').map(c=>'<td dir="auto">'+inl(c.trim())+'</td>').join('')+'</tr>');continue}
+  close();
+  if(m=l.match(/^(#{1,4})\s+(.*)/)){out.push('<h'+m[1].length+' dir="auto">'+inl(m[2])+'</h'+m[1].length+'>');continue}
+  if(m=l.match(/^[-*+]\s+(.*)/)){out.push('<ul><li dir="auto">'+inl(m[1])+'</li></ul>');continue}
+  if(/^[-=_*]{3,}$/.test(l))continue;
+  out.push('<p dir="auto">'+inl(l)+'</p>')}
+ close();return out.join('')}
+async function getPage(u){
+ try{const r=await fetch('https://r.jina.ai/'+u,{headers:{Accept:'text/plain'}});if(!r.ok)throw 0;const t=await r.text();
+  const ti=(t.match(/^Title:\s*(.*)$/m)||[])[1],k=t.indexOf('Markdown Content:'),body=k>=0?t.slice(k+17):t;
+  if(body.trim().length<20)throw 0;return (ti?'# '+ti+'\n\n':'')+body}
+ catch(e){const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(u));if(!r.ok)throw new Error('تعذّر فتح الرابط');
+  const d=new DOMParser().parseFromString(await r.text(),'text/html');d.querySelectorAll('script,style,nav,footer,aside,header,form,noscript').forEach(e=>e.remove());
+  const root=d.querySelector('article,main')||d.body,pre={H1:'# ',H2:'## ',H3:'### ',H4:'#### ',LI:'- '};
+  const md=[...root.querySelectorAll('h1,h2,h3,h4,p,li')].map(e=>(pre[e.tagName]||'')+e.textContent.trim().replace(/\s+/g,' ')).filter(x=>x.replace(/^[#-]+\s*/,'').length>1).join('\n\n');
+  if(md.length<20)throw new Error('ما لقيتش نص في الصفحة دي');return (d.title?'# '+d.title+'\n\n':'')+md}}
+$('b9').onclick=async()=>{let u=$('ul').value.trim();if(!u)return;if(!/^https?:\/\//i.test(u))u='https://'+u;
+ $('b9').disabled=true;$('st4').textContent='جارٍ قراءة الصفحة…';
+ try{$('rs4').innerHTML=clean(md2html(await getPage(u)));$('rs4').classList.remove('hide');$('ex4').classList.remove('hide');$('st4').textContent='تم ✓ — تقدر تعدّل مباشرة قبل التصدير'}
+ catch(e){$('st4').textContent=e.message||'تعذّر استخراج النص'}
+ $('b9').disabled=false};
+$('b10').onclick=()=>dl(new Blob(['\ufeff',docHtml($('rs4'))],{type:'application/msword'}),'crazydf-page.doc');
+$('b11').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml($('rs4')));w.document.close();w.focus();setTimeout(()=>w.print(),500)};
+$('b12').onclick=()=>{navigator.clipboard.writeText($('rs4').innerText);$('st4').textContent='تم النسخ ✓'};
