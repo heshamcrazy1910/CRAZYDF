@@ -1,5 +1,14 @@
 const $=id=>document.getElementById(id);
 try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}catch(e){}
+
+// شريط تقدم القراءة
+window.onscroll = function() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  $("progressBar").style.width = scrolled + "%";
+};
+
 [1,2,3,4].forEach(i=>$('t'+i).onclick=()=>tab(i));
 function tab(n){[1,2,3,4].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
@@ -123,7 +132,7 @@ $('b4').onclick=async()=>{$('b4').disabled=true;$('st3').textContent='جارٍ �
   $('rs').innerHTML=h;$('rs').classList.remove('hide');$('ex').classList.remove('hide');$('cmw').classList.remove('hide');$('st3').textContent='تم ✓ — تقدر تعدّل مباشرة قبل التصدير';
  }catch(e){$('st3').textContent=e.message||'تعذّرت المعالجة'}
  $('b4').disabled=false};
-function docHtml(el){el=el||$('rs');return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Arial,Cairo,sans-serif;font-size:14pt;line-height:1.8}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+el.innerHTML+'</body></html>'}
+function docHtml(el){el=el||$('rs');return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Cairo,Arial,sans-serif;font-size:14pt;line-height:1.8}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+el.innerHTML+'</body></html>'}
 $('b5').onclick=()=>dl(new Blob(['\ufeff',docHtml()],{type:'application/msword'}),'crazydf.doc');
 $('b6').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml());w.document.close();w.focus();setTimeout(()=>w.print(),500)};
 $('b7').onclick=()=>{navigator.clipboard.writeText($('rs').innerText);$('st3').textContent='تم النسخ ✓'};
