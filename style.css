@@ -47,11 +47,36 @@ h1 b { background: var(--g); -webkit-background-clip: text; background-clip: tex
 .sub { color: var(--mu); margin: 8px 0 24px; line-height: 1.8; font-weight: 400; }
 
 /* التبويبات */
-.tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.tabs button { flex: 1; padding: 12px; border: 1px solid var(--bd); background: var(--card); color: var(--tx); border-radius: 999px; font: 600 16px Cairo, sans-serif; cursor: pointer; backdrop-filter: blur(10px); transition: 0.3s; }
-.tabs button:hover { border-color: rgba(255,255,255,0.2); }
-.tabs button.on { background: var(--g); border-color: transparent; box-shadow: 0 0 22px rgba(124, 92, 255, 0.4); color: #fff; }
+.tabs { 
+  display: grid; /* استخدام الشبكة */
+  grid-template-columns: 1fr 1fr; /* عمودين متساويين */
+  gap: 10px; 
+  margin-bottom: 16px; 
+}
 
+.tabs button { 
+  border: 1px solid var(--bd); 
+  background: var(--card); 
+  color: var(--tx); 
+  border-radius: 16px; /* تقليل الانحناء عشان يناسب الشكل المربع */
+  font: 600 14px Cairo, sans-serif; 
+  padding: 12px 8px; /* مساحات داخلية مناسبة */
+  cursor: pointer; 
+  backdrop-filter: blur(10px); 
+  transition: 0.3s; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.tabs button.on { 
+  background: var(--g); 
+  border-color: transparent; 
+  box-shadow: 0 0 22px rgba(124, 92, 255, 0.4); 
+  color: #fff; 
+}
 /* البطاقات الزجاجية */
 .card { background: var(--card); border: 1px solid var(--bd); border-radius: 24px; padding: 24px; backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); margin-bottom: 20px; }
 
