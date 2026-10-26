@@ -4,8 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>crazydf — تحويل PDF وصور</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<!-- تحديث الأيقونة بألوان الموقع الجديدة -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%237c5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2300d4ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%237c5cff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- تحديث الخط ليشمل كل الأوزان -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -13,9 +15,22 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- شريط تقدم القراءة -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- الخلفية المتحركة -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
 <div class="w">
 
-<div class="brand"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2314b8ff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2314b8ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%238b5cf6' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><h1>crazy<b>df</b></h1></div>
+<div class="brand"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%237c5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2300d4ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%237c5cff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><h1>crazy<b>df</b></h1></div>
 <p class="sub">حوّل الصور إلى PDF والعكس — داخل متصفحك، بدون رفع ملفات وبدون تسجيل.<br>وكمان: ارفع أي صورة فيها كتابة أو جدول، وGemini AI يستخرج النص ويعيد بناءه كملف Word أو PDF قابل للتعديل، مع إمكانية كتابة ملاحظة لتصحيح أي خطأ.<br><span class="mu">ملاحظة: ميزة Gemini AI بتبعت الصورة لـ Google عشان تقراها.</span></p>
 <div class="tabs"><button id="t1" class="on">صور ← PDF</button><button id="t2">PDF ← صور</button><button id="t3">صورة ← نص / Word</button><button id="t4">رابط ← نص / Word</button></div>
 
@@ -36,14 +51,13 @@
 <div class="drop" id="d2">اسحب ملف PDF هنا أو اضغط للاختيار</div>
 <input type="file" id="f2" accept="application/pdf" hidden>
 <div class="opts">
-
-
 <button class="go" id="b2" disabled>تحميل المحدد</button>
 <button class="go" id="b3" disabled>الكل ZIP</button>
 <span class="mu" id="st"></span>
 </div>
 <div class="grid" id="g2"></div>
 </div>
+
 <div id="p3" class="card hide">
 <div class="drop" id="d3">ارفع صورة فيها نص أو جدول (JPG, PNG, WebP)</div>
 <input type="file" id="f3" accept="image/*" hidden>
@@ -56,6 +70,7 @@
 <div id="cmw" class="hide"><textarea id="cm" dir="auto" rows="2" placeholder="اكتب ملاحظتك لو فيه حاجة غلط، مثلاً: الكلمة في السطر التاني غلط، أو الجدول ناقص عمود…" style="min-height:70px"></textarea><div class="opts"><button class="go" id="b8">طبّق التعديل بـ Gemini</button></div></div>
 <div class="opts hide" id="ex"><button class="go" id="b5">تحميل Word</button><button class="go" id="b6">حفظ PDF</button><button class="go" id="b7">نسخ النص</button></div>
 </div>
+
 <div id="p4" class="card hide">
 <div class="opts"><input id="ul" type="url" placeholder="https://example.com/article" autocomplete="off"><button class="go" id="b9">استخراج النص</button></div>
 <span class="mu" id="st4">الرابط بيتبعت لخدمة Jina Reader عشان تقرا الصفحة. الصفحات اللي محتاجة تسجيل دخول مش هتشتغل.</span>
