@@ -9,8 +9,8 @@ window.onscroll = function() {
   $("progressBar").style.width = scrolled + "%";
 };
 
-[1,2,3,4].forEach(i=>$('t'+i).onclick=()=>tab(i));
-function tab(n){[1,2,3,4].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
+[1,2,3,4,5].forEach(i=>$('t'+i).onclick=()=>tab(i));
+function tab(n){[1,2,3,4,5].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function wire(d,f,cb){d.onclick=()=>f.click();f.onchange=()=>{cb([...f.files]);f.value=''};
 d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.ondragleave=()=>d.classList.remove('h');
@@ -167,3 +167,47 @@ $('b9').onclick=async()=>{let u=$('ul').value.trim();if(!u)return;if(!/^https?:\
 $('b10').onclick=()=>dl(new Blob(['\ufeff',docHtml($('rs4'))],{type:'application/msword'}),'crazydf-page.doc');
 $('b11').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml($('rs4')));w.document.close();w.focus();setTimeout(()=>w.print(),500)};
 $('b12').onclick=()=>{navigator.clipboard.writeText($('rs4').innerText);$('st4').textContent='تم النسخ ✓'};
+
+/* أي ملف -> PDF */
+const CODE=['js','ts','jsx','tsx','py','java','c','cpp','h','cs','php','rb','go','rs','sql','css','xml','yml','yaml','ini','sh','bat','svg','env','conf'];
+const pre=t=>'<pre style="white-space:pre-wrap;direction:ltr;text-align:left;font:13px/1.6 monospace">'+esc(t)+'</pre>';
+const plain=t=>t.split(/\r?\n/).map(l=>l.trim()?'<p dir="auto" style="margin:.2em 0">'+esc(l)+'</p>':'<br>').join('');
+const unx=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+let name5='file';
+async function conv5(f){
+ $('st5').textContent='جارٍ التحويل…';$('rs5').classList.add('hide');$('ex5').classList.add('hide');
+ const ext=(f.name.split('.').pop()||'').toLowerCase();name5=f.name.replace(/\.[^.]+$/,'')||'file';let h='';
+ try{
+  if(f.type.startsWith('image/'))h='<p style="text-align:center"><img src="'+URL.createObjectURL(f)+'" style="max-width:100%"></p>';
+  else if(ext=='pdf')throw new Error('الملف ده PDF أصلاً 🙂');
+  else if(ext=='docx'){if(!window.mammoth)throw new Error('تعذّر تحميل مكتبة Word — تأكد من الإنترنت');h=clean((await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()})).value)}
+  else if(['xlsx','xls','xlsm','ods','csv','tsv'].includes(ext)){if(!window.XLSX)throw new Error('تعذّر تحميل مكتبة Excel — تأكد من الإنترنت');
+   const wb=['csv','tsv'].includes(ext)?XLSX.read(await f.text(),{type:'string'}):XLSX.read(await f.arrayBuffer(),{type:'array'});
+   h=wb.SheetNames.map(n=>'<h2>'+esc(n)+'</h2>'+clean(XLSX.utils.sheet_to_html(wb.Sheets[n]))).join('')}
+  else if(ext=='pptx'){const z=await JSZip.loadAsync(await f.arrayBuffer());
+   const ns=Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>a.match(/\d+/)[0]-b.match(/\d+/)[0]);
+   if(!ns.length)throw new Error('ما لقيتش شرائح في الملف');
+   for(let i=0;i<ns.length;i++){const xml=await z.file(ns[i]).async('string');
+    const ps=[...xml.matchAll(/<a:p[ >][\s\S]*?<\/a:p>/g)].map(p=>[...p[0].matchAll(/<a:t[^>]*>([^<]*)<\/a:t>/g)].map(m=>unx(m[1])).join('')).filter(x=>x.trim());
+    h+='<h2>شريحة '+(i+1)+'</h2>'+ps.map(x=>'<p dir="auto">'+esc(x)+'</p>').join('')}}
+  else if(['html','htm'].includes(ext))h=clean(await f.text());
+  else if(['md','markdown'].includes(ext))h=clean(md2html(await f.text()));
+  else if(ext=='json'){let t=await f.text();try{t=JSON.stringify(JSON.parse(t),null,2)}catch(e){}h=pre(t)}
+  else if(CODE.includes(ext))h=pre(await f.text());
+  else{const t=await f.text();
+   if(t.includes('\u0000')||(t.match(/\uFFFD/g)||[]).length>t.length*.02)throw new Error('الصيغة .'+ext+' مش مدعومة جوّه المتصفح (زي DWG وDOC القديم). حوّلها من برنامجها الأصلي أو صدّرها لـ docx/xlsx/صورة الأول.');
+   h=plain(t)}
+  if(!h.trim())throw new Error('الملف فاضي أو مفيش نص يتعرض');
+  $('rs5').innerHTML=h;$('rs5').classList.remove('hide');$('ex5').classList.remove('hide');$('st5').textContent='تم ✓ — '+f.name+' — تقدر تعدّل قبل التحميل'
+ }catch(e){$('st5').textContent=e.message||'تعذّر التحويل'}}
+wire($('d5'),$('f5'),fl=>{if(fl[0])conv5(fl[0])});
+$('b13').onclick=async()=>{$('b13').disabled=true;$('st5').textContent='جارٍ إنشاء PDF…';
+ try{const {jsPDF}=window.jspdf,c=await html2canvas($('rs5'),{scale:2,backgroundColor:'#ffffff',useCORS:true});
+  const pdf=new jsPDF({unit:'mm',format:'a4'}),m=10,iw=190,k=c.width/iw,ph=Math.floor(277*k);
+  for(let y=0,i=0;y<c.height;y+=ph,i++){const p=document.createElement('canvas');p.width=c.width;p.height=Math.min(ph,c.height-y);
+   p.getContext('2d').drawImage(c,0,y,c.width,p.height,0,0,c.width,p.height);
+   if(i)pdf.addPage();pdf.addImage(p.toDataURL('image/jpeg',.95),'JPEG',m,m,iw,p.height/k)}
+  pdf.save(name5+'.pdf');$('st5').textContent='تم التحميل ✓'
+ }catch(e){$('st5').textContent='تعذّر إنشاء PDF — جرّب "نص قابل للتحديد"'}
+ $('b13').disabled=false};
+$('b14').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml($('rs5')));w.document.close();w.focus();setTimeout(()=>w.print(),600)};

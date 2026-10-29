@@ -550,7 +550,8 @@ textarea:focus {
 }
 
 #rs,
-#rs4 {
+#rs4,
+#rs5 {
   margin-top: 14px;
   background: #fff;
   color: #111;
@@ -563,12 +564,14 @@ textarea:focus {
 }
 
 #rs:focus,
-#rs4:focus {
+#rs4:focus,
+#rs5:focus {
   outline: 2px solid var(--c1);
 }
 
 #rs table,
-#rs4 table {
+#rs4 table,
+#rs5 table {
   border-collapse: collapse;
   width: 100%;
 }
@@ -576,7 +579,9 @@ textarea:focus {
 #rs td,
 #rs th,
 #rs4 td,
-#rs4 th {
+#rs5 td,
+#rs4 th,
+#rs5 th {
   border: 1px solid #999;
   padding: 6px 8px;
 }
@@ -595,3 +600,5 @@ textarea:focus {
   color: #fff;
   border-color: #fff;
 }
+#rs5 table{font-size:13px}
+#rs5 pre{margin:0}
