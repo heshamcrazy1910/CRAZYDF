@@ -12,6 +12,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,66 +30,3 @@
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
 </div>
-
-<div class="w">
-
-<div class="brand"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300d4ff'/%3E%3Cstop offset='1' stop-color='%237c5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url%28%23g%29'/%3E%3Cpath d='M47 20a20 20 0 1 0 0 24' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M24 25a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2H26a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M33 23v5h5' fill='none' stroke='%2300d4ff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M27 33h8M27 37h8' stroke='%237c5cff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E" alt=""><h1>crazy<b>df</b></h1></div>
-<p class="sub">حوّل الصور إلى PDF والعكس — داخل متصفحك، بدون رفع ملفات وبدون تسجيل.<br>وكمان: ارفع أي صورة فيها كتابة أو جدول، وGemini AI يستخرج النص ويعيد بناءه كملف Word أو PDF قابل للتعديل، مع إمكانية كتابة ملاحظة لتصحيح أي خطأ.<br><span class="mu">ملاحظة: ميزة Gemini AI بتبعت الصورة لـ Google عشان تقراها.</span></p>
-<div class="tabs"><button id="t1" class="on">صور ← PDF</button><button id="t2">PDF ← صور</button><button id="t3">صورة ← نص / Word</button><button id="t4">رابط ← نص / Word</button></div>
-
-<div id="p1" class="card">
-<div class="drop" id="d1">اسحب الصور هنا أو اضغط للاختيار (JPG, PNG, WebP)</div>
-<input type="file" id="f1" accept="image/*" multiple hidden>
-<div class="grid" id="g1"></div>
-<div class="opts">
-<select id="ori"><option value="p">طولي</option><option value="l">عرضي</option></select>
-<select id="siz"><option value="a4">A4</option><option value="img">نفس حجم الصورة</option></select>
-<select id="mar"><option value="0">بدون هوامش</option><option value="5">هوامش صغيرة</option><option value="10">هوامش وسط</option><option value="20">هوامش كبيرة</option></select>
-<button class="go" id="b1" disabled>إنشاء PDF</button>
-</div>
-<p class="mu">رتّب الصور بالسحب والإفلات قبل التحويل.</p>
-</div>
-
-<div id="p2" class="card hide">
-<div class="drop" id="d2">اسحب ملف PDF هنا أو اضغط للاختيار</div>
-<input type="file" id="f2" accept="application/pdf" hidden>
-<div class="opts">
-<button class="go" id="b2" disabled>تحميل المحدد</button>
-<button class="go" id="b3" disabled>الكل ZIP</button>
-<span class="mu" id="st"></span>
-</div>
-<div class="grid" id="g2"></div>
-</div>
-
-<div id="p3" class="card hide">
-<div class="drop" id="d3">ارفع صورة فيها نص أو جدول (JPG, PNG, WebP)</div>
-<input type="file" id="f3" accept="image/*" hidden>
-<img id="pv3" class="hide" alt="">
-<div class="opts"><select id="en"><option value="ai">Gemini AI (مجاني)</option><option value="ocr">OCR مجاني</option></select><select id="lg"><option value="ara+eng">عربي + إنجليزي</option><option value="ara">عربي</option><option value="eng">إنجليزي</option></select></div>
-<div id="kw"><div class="opts" id="kr"><input id="ky" type="password" placeholder="Gemini API key (AIza…)" autocomplete="off"><span class="mu">المفتاح بيتحفظ في متصفحك بس، وبيتبعت لـ Google فقط.</span></div>
-<a id="gk" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">🔑 اضغط هنا لجلب مفتاح API وانسخه</a></div>
-<div class="opts"><button class="go" id="b4" disabled>استخراج وإعادة بناء</button><span class="mu" id="st3"></span></div>
-<div id="rs" class="hide" contenteditable="true" dir="auto"></div>
-<div id="cmw" class="hide"><textarea id="cm" dir="auto" rows="2" placeholder="اكتب ملاحظتك لو فيه حاجة غلط، مثلاً: الكلمة في السطر التاني غلط، أو الجدول ناقص عمود…" style="min-height:70px"></textarea><div class="opts"><button class="go" id="b8">طبّق التعديل بـ Gemini</button></div></div>
-<div class="opts hide" id="ex"><button class="go" id="b5">تحميل Word</button><button class="go" id="b6">حفظ PDF</button><button class="go" id="b7">نسخ النص</button></div>
-</div>
-
-<div id="p4" class="card hide">
-<div class="opts"><input id="ul" type="url" placeholder="https://example.com/article" autocomplete="off"><button class="go" id="b9">استخراج النص</button></div>
-<span class="mu" id="st4">الرابط بيتبعت لخدمة Jina Reader عشان تقرا الصفحة. الصفحات اللي محتاجة تسجيل دخول مش هتشتغل.</span>
-<div id="rs4" class="hide" contenteditable="true" dir="auto"></div>
-<div class="opts hide" id="ex4"><button class="go" id="b10">تحميل Word</button><button class="go" id="b11">حفظ PDF</button><button class="go" id="b12">نسخ النص</button></div>
-</div>
-</div>
-
-<footer>
-<div class="soc">
-<a href="https://wa.me/heshamcrazy19" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 21l1.6-4.6A9 9 0 1 1 8 19.6L3 21z"/><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.5-2-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-2z" fill="currentColor" stroke="none"/></svg></a>
-<a href="https://www.facebook.com/share/14s7tuikb33/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.5V11H7v4h2.5v7h4v-7H16l.5-4h-3V9c0-.6.4-1 1-1z"/></svg></a>
-<a href="https://instagram.com/hesham.hassan19" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
-</div>
-<p>© 2026 <b>heshamcrazy</b> — جميع الحقوق محفوظة</p>
-</footer>
-<script src="script.js"></script>
-</body>
-</html>
