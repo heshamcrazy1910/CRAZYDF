@@ -1,6 +1,7 @@
 const $=id=>document.getElementById(id);
 try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}catch(e){}
 
+// شريط تقدم القراءة
 window.onscroll = function() {
   var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
   var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -8,8 +9,8 @@ window.onscroll = function() {
   $("progressBar").style.width = scrolled + "%";
 };
 
-[1,2,3,4,5,6].forEach(i=>$('t'+i).onclick=()=>tab(i));
-function tab(n){[1,2,3,4,5,6].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
+[1,2,3,4,5].forEach(i=>$('t'+i).onclick=()=>tab(i));
+function tab(n){[1,2,3,4,5].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function wire(d,f,cb){d.onclick=()=>f.click();f.onchange=()=>{cb([...f.files]);f.value=''};
 d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.ondragleave=()=>d.classList.remove('h');
@@ -210,39 +211,3 @@ $('b13').onclick=async()=>{$('b13').disabled=true;$('st5').textContent='جارٍ
  }catch(e){$('st5').textContent='تعذّر إنشاء PDF — جرّب "نص قابل للتحديد"'}
  $('b13').disabled=false};
 $('b14').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.write(docHtml($('rs5')));w.document.close();w.focus();setTimeout(()=>w.print(),600)};
-
-/* ====== أي ملف ← صيغة يختارها المستخدم ====== */
-let file6=null,html6='';
-
-async function extractAny(f){
-  const ext=(f.name.split('.').pop()||'').toLowerCase();
-  if(f.type.startsWith('image/')){
-    const url=URL.createObjectURL(f);
-    return {html:'<p style="text-align:center"><img src="'+url+'" style="max-width:100%"></p>',imgUrl:url};
-  }
-  if(ext=='pdf'){
-    const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;let html='';
-    for(let n=1;n<=pdf.numPages;n++){
-      const pg=await pdf.getPage(n),tc=await pg.getTextContent();
-      let text='',lastY=null;
-      tc.items.forEach(it=>{if(lastY!==null&&Math.abs(it.transform[5]-lastY)>5)text+='\n';text+=it.str+' ';lastY=it.transform[5]});
-      html+='<h3>صفحة '+n+'</h3>'+text.split(/\n+/).map(l=>l.trim()?'<p dir="auto">'+esc(l.trim())+'</p>':'').join('')}
-    return {html}
-  }
-  if(ext=='docx'){
-    if(!window.mammoth)throw new Error('تعذّر تحميل مكتبة Word');
-    return {html:clean((await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()})).value)}
-  }
-  if(['xlsx','xls','xlsm','ods','csv','tsv'].includes(ext)){
-    if(!window.XLSX)throw new Error('تعذّر تحميل مكتبة Excel');
-    const wb=['csv','tsv'].includes(ext)?XLSX.read(await f.text(),{type:'string'}):XLSX.read(await f.arrayBuffer(),{type:'array'});
-    const html=wb.SheetNames.map(n=>'<h2>'+esc(n)+'</h2>'+clean(XLSX.utils.sheet_to_html(wb.Sheets[n]))).join('');
-    return {html}
-  }
-  if(ext=='pptx'){
-    const z=await JSZip.loadAsync(await f.arrayBuffer());
-    const ns=Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>a.match(/\d+/)[0]-b.match(/\d+/)[0]);
-    let html='';for(let i=0;i<ns.length;i++){
-      const xml=await z.file(ns[i]).async('string');
-      const ps=[...xml.matchAll(/<a:p[ >][\s\S]*?<\/a:p>/g)].map(p=>[...p[0].matchAll(/<a:t[^>]*>([^<]*)<\/a:t>/g)].map(m=>unx(m[1])).join('')).filter(x=>x.trim());
-      html+='<h2>شريحة '+(i+1)+'</h2>
