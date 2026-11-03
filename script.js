@@ -1,18 +1,17 @@
 const $=id=>document.getElementById(id);
 try{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}catch(e){}
 
-window.onscroll = function() {
-  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-  var scrolled = (winScroll / height) * 100;
-  $("progressBar").style.width = scrolled + "%";
+window.onscroll=function(){
+  var w=document.body.scrollTop||document.documentElement.scrollTop;
+  var h=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+  $("progressBar").style.width=(w/h)*100+"%";
 };
 
-[1,2,3,4,5,6].forEach(i=>$('t'+i).onclick=()=>tab(i));
-function tab(n){[1,2,3,4,5,6].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
+[1,2,3,4,5,6,7,8,9,10].forEach(i=>$('t'+i).onclick=()=>tab(i));
+function tab(n){[1,2,3,4,5,6,7,8,9,10].forEach(i=>{$('p'+i).classList.toggle('hide',i!=n);$('t'+i).classList.toggle('on',i==n)})}
 function dl(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
 function wire(d,f,cb){d.onclick=()=>f.click();f.onchange=()=>{cb([...f.files]);f.value=''};
-d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.ondragleave=()=>d.classList.remove('h');
+d.ondragover=e=>{e.preventDefault();d.classList.add('h')};d.dragleave=()=>d.classList.remove('h');
 d.ondrop=e=>{e.preventDefault();d.classList.remove('h');cb([...e.dataTransfer.files])}}
 
 /* Images -> PDF */
@@ -86,7 +85,7 @@ let file3=null;
 try{$('ky').value=localStorage.getItem('crazydf_gkey')||''}catch(e){}
 const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function clean(h){const d=new DOMParser().parseFromString(h,'text/html');d.querySelectorAll('script,iframe,object,embed,link,meta,style,form').forEach(e=>e.remove());d.body.querySelectorAll('*').forEach(e=>{[...e.attributes].forEach(a=>{if(/^on/i.test(a.name)||/javascript:/i.test(a.value))e.removeAttribute(a.name)})});return d.body.innerHTML}
-function showKey(){$('kw').classList.toggle('hide',$('en').value!='ai');0}
+function showKey(){$('kw').classList.toggle('hide',$('en').value!='ai')}
 $('en').onchange=showKey;showKey();
 wire($('d3'),$('f3'),fl=>{const f=fl[0];if(!f||!f.type.startsWith('image/'))return;file3=f;$('pv3').src=URL.createObjectURL(f);$('pv3').classList.remove('hide');$('b4').disabled=false;$('st3').textContent=''});
 function toJpeg(f){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1800/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=im.naturalWidth*k;c.height=im.naturalHeight*k;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.9).split(',')[1])};im.onerror=rej;im.src=URL.createObjectURL(f)})}
@@ -194,10 +193,10 @@ async function conv5(f){
   else if(ext=='json'){let t=await f.text();try{t=JSON.stringify(JSON.parse(t),null,2)}catch(e){}h=pre(t)}
   else if(CODE.includes(ext))h=pre(await f.text());
   else{const t=await f.text();
-   if(t.includes('\u0000')||(t.match(/\uFFFD/g)||[]).length>t.length*.02)throw new Error('الصيغة .'+ext+' مش مدعومة جوّه المتصفح (زي DWG وDOC القديم). حوّلها من برنامجها الأصلي أو صدّرها لـ docx/xlsx/صورة الأول.');
+   if(t.includes('\u0000')||(t.match(/\uFFFD/g)||[]).length>t.length*.02)throw new Error('الصيغة .'+ext+' مش مدعومة جوّه المتصفح.');
    h=plain(t)}
   if(!h.trim())throw new Error('الملف فاضي أو مفيش نص يتعرض');
-  $('rs5').innerHTML=h;$('rs5').classList.remove('hide');$('ex5').classList.remove('hide');$('st5').textContent='تم ✓ — '+f.name+' — تقدر تعدّل قبل التحميل'
+  $('rs5').innerHTML=h;$('rs5').classList.remove('hide');$('ex5').classList.remove('hide');$('st5').textContent='تم ✓ — '+f.name
  }catch(e){$('st5').textContent=e.message||'تعذّر التحويل'}}
 wire($('d5'),$('f5'),fl=>{if(fl[0])conv5(fl[0])});
 $('b13').onclick=async()=>{$('b13').disabled=true;$('st5').textContent='جارٍ إنشاء PDF…';
@@ -213,13 +212,9 @@ $('b14').onclick=()=>{const w=window.open('','_blank');if(!w)return;w.document.w
 
 /* ====== أي ملف ← صيغة يختارها المستخدم ====== */
 let file6=null,html6='';
-
 async function extractAny(f){
   const ext=(f.name.split('.').pop()||'').toLowerCase();
-  if(f.type.startsWith('image/')){
-    const url=URL.createObjectURL(f);
-    return {html:'<p style="text-align:center"><img src="'+url+'" style="max-width:100%"></p>',imgUrl:url};
-  }
+  if(f.type.startsWith('image/')){const url=URL.createObjectURL(f);return{html:'<p style="text-align:center"><img src="'+url+'" style="max-width:100%"></p>',imgUrl:url}}
   if(ext=='pdf'){
     const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;let html='';
     for(let n=1;n<=pdf.numPages;n++){
@@ -227,168 +222,22 @@ async function extractAny(f){
       let text='',lastY=null;
       tc.items.forEach(it=>{if(lastY!==null&&Math.abs(it.transform[5]-lastY)>5)text+='\n';text+=it.str+' ';lastY=it.transform[5]});
       html+='<h3>صفحة '+n+'</h3>'+text.split(/\n+/).map(l=>l.trim()?'<p dir="auto">'+esc(l.trim())+'</p>':'').join('')}
-    return {html}
+    return{html}
   }
-  if(ext=='docx'){
-    if(!window.mammoth)throw new Error('تعذّر تحميل مكتبة Word');
-    return {html:clean((await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()})).value)}
-  }
+  if(ext=='docx'){if(!window.mammoth)throw new Error('تعذّر تحميل مكتبة Word');return{html:clean((await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()})).value)}}
   if(['xlsx','xls','xlsm','ods','csv','tsv'].includes(ext)){
     if(!window.XLSX)throw new Error('تعذّر تحميل مكتبة Excel');
     const wb=['csv','tsv'].includes(ext)?XLSX.read(await f.text(),{type:'string'}):XLSX.read(await f.arrayBuffer(),{type:'array'});
     const html=wb.SheetNames.map(n=>'<h2>'+esc(n)+'</h2>'+clean(XLSX.utils.sheet_to_html(wb.Sheets[n]))).join('');
-    return {html}
+    return{html}
   }
   if(ext=='pptx'){
     const z=await JSZip.loadAsync(await f.arrayBuffer());
     const ns=Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a,b)=>a.match(/\d+/)[0]-b.match(/\d+/)[0]);
-    let html='';for(let i=0;i<ns.length;i++){
-      const xml=await z.file(ns[i]).async('string');
+    let html='';for(let i=0;i<ns.length;i++){const xml=await z.file(ns[i]).async('string');
       const ps=[...xml.matchAll(/<a:p[ >][\s\S]*?<\/a:p>/g)].map(p=>[...p[0].matchAll(/<a:t[^>]*>([^<]*)<\/a:t>/g)].map(m=>unx(m[1])).join('')).filter(x=>x.trim());
       html+='<h2>شريحة '+(i+1)+'</h2>'+ps.map(x=>'<p dir="auto">'+esc(x)+'</p>').join('')}
-    return {html}
+    return{html}
   }
-  if(['html','htm'].includes(ext))return {html:clean(await f.text())};
-  if(['md','markdown'].includes(ext))return {html:clean(md2html(await f.text()))};
-  if(ext=='json'){let t=await f.text();try{t=JSON.stringify(JSON.parse(t),null,2)}catch(e){}return {html:pre(t)}}
-  if(CODE.includes(ext))return {html:pre(await f.text())};
-  const t=await f.text();
-  if(t.includes('\u0000'))throw new Error('الصيغة .'+ext+' مش مدعومة جوّه المتصفح');
-  return {html:plain(t)}
-}
-
-function docHtmlFrom(inner){
-  return '<html dir="rtl" lang="ar"><head><meta charset="utf-8"><style>body{font-family:Cairo,Arial,sans-serif;font-size:14pt;line-height:1.8;padding:20px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:4px}</style></head><body>'+inner+'</body></html>'
-}
-
-function htmlToText(html){
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const blocks=doc.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li,tr,pre,div');
-  if(blocks.length)return [...blocks].map(b=>b.textContent.trim()).filter(l=>l).join('\n\n');
-  return (doc.body.textContent||'').trim()
-}
-
-function toXLSX(html){
-  const wb=XLSX.utils.book_new();
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const tables=doc.querySelectorAll('table');
-  if(tables.length){
-    tables.forEach((t,i)=>{XLSX.utils.book_append_sheet(wb,XLSX.utils.table_to_sheet(t),'Sheet'+(i+1))})
-  }else{
-    const blocks=doc.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li');
-    let data=blocks.length?[...blocks].map(b=>[b.textContent.trim()]).filter(r=>r[0]):(doc.body.textContent||'').split(/\r?\n/).map(l=>[l]).filter(r=>r[0].trim());
-    if(!data.length)data=[['']];
-    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(data),'Sheet1')
-  }
-  return XLSX.write(wb,{type:'array',bookType:'xlsx'})
-}
-
-function toCSV(html){
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const tables=doc.querySelectorAll('table');
-  const q=s=>'"'+s.trim().replace(/"/g,'""')+'"';
-  if(tables.length){
-    return [...tables[0].querySelectorAll('tr')].map(tr=>[...tr.querySelectorAll('td,th')].map(c=>q(c.textContent)).join(',')).join('\n')
-  }
-  const blocks=doc.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li');
-  const lines=blocks.length?[...blocks].map(b=>b.textContent.trim()).filter(l=>l):(doc.body.textContent||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
-  return lines.map(l=>q(l)).join('\n')
-}
-
-function htmlToMd(html){
-  const doc=new DOMParser().parseFromString(html,'text/html');
-  const walk=n=>{
-    if(n.nodeType===3)return n.textContent;
-    if(n.nodeType!==1)return '';
-    const tag=n.tagName.toLowerCase();
-    const inner=[...n.childNodes].map(walk).join('');
-    if(tag=='h1')return '# '+inner+'\n\n';
-    if(tag=='h2')return '## '+inner+'\n\n';
-    if(tag=='h3')return '### '+inner+'\n\n';
-    if(tag=='h4')return '#### '+inner+'\n\n';
-    if(tag=='p')return inner+'\n\n';
-    if(tag=='br')return '\n';
-    if(tag=='b'||tag=='strong')return '**'+inner+'**';
-    if(tag=='i'||tag=='em')return '*'+inner+'*';
-    if(tag=='li')return '- '+inner+'\n';
-    if(tag=='ul'||tag=='ol')return inner+'\n';
-    if(tag=='a')return '['+inner+']('+(n.getAttribute('href')||'')+')';
-    if(tag=='img')return '!['+(n.getAttribute('alt')||'')+']('+(n.getAttribute('src')||'')+')';
-    if(tag=='table'){
-      const rows=n.querySelectorAll('tr');let md='';
-      rows.forEach((tr,i)=>{
-        const cells=[...tr.querySelectorAll('td,th')].map(c=>c.textContent.trim());
-        md+='| '+cells.join(' | ')+' |\n';
-        if(i===0)md+='|'+cells.map(()=>'---').join('|')+'|\n';
-      });return md+'\n'
-    }
-    if(tag=='code'||tag=='pre')return '```\n'+inner+'\n```\n';
-    return inner
-  };
-  return walk(doc.body).trim()
-}
-
-wire($('d6'),$('f6'),fl=>{
-  if(!fl[0])return;
-  file6=fl[0];html6='';
-  $('b16').disabled=false;$('st6').textContent='تم اختيار: '+file6.name;
-  $('rs6').classList.add('hide');$('rs6').innerHTML='';
-});
-
-$('b16').onclick=async()=>{
-  if(!file6)return;
-  const fmt=$('outfmt').value;
-  const baseName=file6.name.replace(/\.[^.]+$/,'')||'file';
-  $('b16').disabled=true;$('st6').textContent='جارٍ التحويل…';
-  try{
-    if(!html6){
-      const r=await extractAny(file6);
-      html6=r.html;
-      if(r.imgUrl&&['xlsx','csv','json','md','txt'].includes(fmt)){
-        if(!window.Tesseract)throw new Error('الصورة محتاجة OCR — مكتبة Tesseract مش محمّلة');
-        $('st6').textContent='جارٍ استخراج النص من الصورة…';
-        const w=await Tesseract.createWorker(['ara','eng'],1,{logger:m=>{if(m.status==='recognizing text')$('st6').textContent='OCR '+Math.round(m.progress*100)+'%'}});
-        const res=await w.recognize(file6);await w.terminate();
-        html6=res.data.text.trim().split(/\n{2,}/).map(p=>'<p dir="auto">'+esc(p).replace(/\n/g,'<br>')+'</p>').join('')
-      }
-    }
-    if(fmt==='pdf'){
-      $('rs6').innerHTML=html6;$('rs6').classList.remove('hide');
-      const {jsPDF}=window.jspdf,c=await html2canvas($('rs6'),{scale:2,backgroundColor:'#ffffff',useCORS:true});
-      const pdf=new jsPDF({unit:'mm',format:'a4'}),m=10,iw=190,k=c.width/iw,ph=Math.floor(277*k);
-      for(let y=0,i=0;y<c.height;y+=ph,i++){
-        const p=document.createElement('canvas');p.width=c.width;p.height=Math.min(ph,c.height-y);
-        p.getContext('2d').drawImage(c,0,y,c.width,p.height,0,0,c.width,p.height);
-        if(i)pdf.addPage();pdf.addImage(p.toDataURL('image/jpeg',.95),'JPEG',m,m,iw,p.height/k)}
-      dl(pdf.output('blob'),baseName+'.pdf')
-    }else if(fmt==='pdf-text'){
-      const w=window.open('','_blank');if(!w)throw new Error('اسمح بالنوافذ المنبثقة');
-      w.document.write(docHtmlFrom(html6));w.document.close();w.focus();setTimeout(()=>w.print(),500)
-    }else if(fmt==='doc'){
-      dl(new Blob(['\ufeff',docHtmlFrom(html6)],{type:'application/msword'}),baseName+'.doc')
-    }else if(fmt==='xlsx'){
-      if(!window.XLSX)throw new Error('تعذّر تحميل مكتبة Excel');
-      dl(new Blob([toXLSX(html6)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),baseName+'.xlsx')
-    }else if(fmt==='csv'){
-      dl(new Blob(['\ufeff',toCSV(html6)],{type:'text/csv;charset=utf-8'}),baseName+'.csv')
-    }else if(fmt==='txt'){
-      dl(new Blob([htmlToText(html6)],{type:'text/plain;charset=utf-8'}),baseName+'.txt')
-    }else if(fmt==='html'){
-      dl(new Blob([docHtmlFrom(html6)],{type:'text/html;charset=utf-8'}),baseName+'.html')
-    }else if(fmt==='md'){
-      dl(new Blob([htmlToMd(html6)],{type:'text/markdown;charset=utf-8'}),baseName+'.md')
-    }else if(fmt==='json'){
-      let data;
-      try{data=JSON.parse(new DOMParser().parseFromString(html6,'text/html').body.textContent)}
-      catch(e){
-        const doc=new DOMParser().parseFromString(html6,'text/html');
-        const blocks=doc.querySelectorAll('p,h1,h2,h3,h4,h5,h6,li');
-        const lines=blocks.length?[...blocks].map(b=>b.textContent.trim()).filter(l=>l):(doc.body.textContent||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
-        data={lines}
-      }
-      dl(new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),baseName+'.json')
-    }
-    $('st6').textContent='تم ✓'
-  }catch(e){$('st6').textContent=e.message||'تعذّر التحويل'}
-  $('b16').disabled=false;
-};
+  if(['html','htm'].includes(ext))return{html:clean(await f.text())};
+  if(['md','markdown'].includes(ext))return{html:clean(md2html
