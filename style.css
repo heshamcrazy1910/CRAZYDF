@@ -32,7 +32,6 @@ html {
 
 ::selection { background: rgba(0, 212, 255, 0.3); color: #fff; }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
 ::-webkit-scrollbar-thumb {
@@ -55,7 +54,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ====== شريط التقدم ====== */
 .progress-container {
   position: fixed; top: 0; left: 0;
   width: 100%; height: 3px;
@@ -70,7 +68,6 @@ body {
   border-radius: 0 3px 3px 0;
 }
 
-/* ====== الخلفية المتحركة ====== */
 .bg-orbs {
   position: fixed; inset: 0;
   z-index: -1; overflow: hidden; pointer-events: none;
@@ -93,14 +90,12 @@ body {
   100% { transform: translate(calc(-50% + 50px), calc(-50% + 50px)) scale(1.1); }
 }
 
-/* ====== الحاوية ====== */
 .w {
   flex: 1; width: 100%; max-width: 880px;
   margin: 0 auto; padding: 20px 16px 60px;
   position: relative; z-index: 1;
 }
 
-/* ====== الشعار والعنوان ====== */
 .brand { display: flex; align-items: center; gap: 16px; margin-top: 20px; }
 .brand img {
   width: 60px; height: 60px; border-radius: 18px;
@@ -124,7 +119,6 @@ body {
   line-height: 1.9; font-size: 15px;
 }
 
-/* ====== التبويبات ====== */
 .tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -159,14 +153,13 @@ body {
   transform: translateY(-1px);
 }
 
-/* أيقونات التبويبات */
 #t1::before { content: '🖼️ '; font-size: 15px; margin-inline-end: 4px; }
 #t2::before { content: '📄 '; font-size: 15px; margin-inline-end: 4px; }
 #t3::before { content: '✨ '; font-size: 15px; margin-inline-end: 4px; }
 #t4::before { content: '🔗 '; font-size: 15px; margin-inline-end: 4px; }
 #t5::before { content: '📁 '; font-size: 15px; margin-inline-end: 4px; }
+#t6::before { content: '🔄 '; font-size: 15px; margin-inline-end: 4px; }
 
-/* ====== البطاقات ====== */
 .card {
   background: var(--card);
   border: 1px solid var(--bd);
@@ -192,7 +185,6 @@ body {
   pointer-events: none;
 }
 
-/* ====== منطقة السحب والإفلات ====== */
 .drop {
   border: 2px dashed rgba(255, 255, 255, 0.12);
   background: rgba(0, 0, 0, 0.25);
@@ -225,7 +217,6 @@ body {
 .drop.h::before { opacity: 1; filter: drop-shadow(0 0 8px var(--c1)); }
 .drop .mu { color: inherit; opacity: 0.7; }
 
-/* ====== شبكة الصور ====== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -273,7 +264,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ====== الحقول والقوائم ====== */
 .opts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; align-items: center; }
 
 select {
@@ -293,7 +283,6 @@ select:hover, select:focus {
 }
 option { background: #0a0a14; color: #f1f5f9; }
 
-/* ====== الأزرار ====== */
 button.go {
   font: 700 15px Cairo, sans-serif;
   padding: 11px 26px;
@@ -323,7 +312,6 @@ button.go:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; filter
 .mu { color: var(--mu); font-size: 13px; }
 .hide { display: none; }
 
-/* ====== القائمة المخصصة ====== */
 .dd { position: relative; }
 .dd > button {
   font: 600 15px Cairo, sans-serif;
@@ -364,7 +352,6 @@ button.go:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; filter
 .dd li:hover { background: rgba(255, 255, 255, 0.08); }
 .dd li.on { background: var(--g); color: #fff; box-shadow: 0 0 15px var(--glow-2); }
 
-/* ====== المدخلات ====== */
 #pv3 {
   max-width: 100%; max-height: 240px;
   margin-top: 14px; border-radius: var(--r-md);
@@ -410,8 +397,7 @@ textarea:focus {
   background: rgba(0, 0, 0, 0.45);
 }
 
-/* ====== صناديق النتيجة ====== */
-#rs, #rs4, #rs5 {
+#rs, #rs4, #rs5, #rs6 {
   margin-top: 16px;
   background: #fff; color: #111;
   border-radius: var(--r-md);
@@ -420,15 +406,14 @@ textarea:focus {
   overflow-x: auto;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.2);
 }
-#rs:focus, #rs4:focus, #rs5:focus { outline: 2px solid var(--c1); outline-offset: 2px; }
-#rs table, #rs4 table, #rs5 table { border-collapse: collapse; width: 100%; }
-#rs td, #rs th, #rs4 td, #rs5 td, #rs4 th, #rs5 th {
+#rs:focus, #rs4:focus, #rs5:focus, #rs6:focus { outline: 2px solid var(--c1); outline-offset: 2px; }
+#rs table, #rs4 table, #rs5 table, #rs6 table { border-collapse: collapse; width: 100%; }
+#rs td, #rs th, #rs4 td, #rs5 td, #rs4 th, #rs5 th, #rs6 td, #rs6 th {
   border: 1px solid #999; padding: 6px 8px;
 }
-#rs5 table { font-size: 13px; }
-#rs5 pre { margin: 0; }
+#rs5 table, #rs6 table { font-size: 13px; }
+#rs5 pre, #rs6 pre { margin: 0; }
 
-/* رابط مفتاح API */
 #gk {
   display: inline-flex; align-items: center; gap: 6px;
   margin-top: 10px;
@@ -446,7 +431,6 @@ textarea:focus {
   box-shadow: 0 4px 16px var(--glow-1);
 }
 
-/* ====== الفوتر ====== */
 footer {
   border-top: 1px solid var(--bd);
   background: rgba(10, 10, 20, 0.85);
@@ -485,7 +469,6 @@ footer p b {
   -webkit-text-fill-color: transparent;
 }
 
-/* ====== استجابة الجوال ====== */
 @media (max-width: 560px) {
   .tabs { grid-template-columns: 1fr 1fr; }
   .tabs button:last-child:nth-child(odd) { grid-column: span 2; }
@@ -505,6 +488,6 @@ footer p b {
   .grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
   .it img, .it canvas { height: 110px; }
   .opts { gap: 10px; }
-  #rs, #rs4, #rs5 { padding: 16px; font-size: 15px; }
+  #rs, #rs4, #rs5, #rs6 { padding: 16px; font-size: 15px; }
   footer { padding: 24px 12px 20px; }
 }
